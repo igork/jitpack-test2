@@ -1,4 +1,4 @@
-package com.geolock;
+package com.test;
 
 import org.junit.Test;
 

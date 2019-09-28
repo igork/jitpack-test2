@@ -1,4 +1,4 @@
-package com.location.aravind.getlocation;
+package com.igork.pn;
 
 import android.Manifest;
 import android.app.Activity;
@@ -18,6 +18,10 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
+
+/*
+https://github.com/AravindVijay7/GeoLocator-Android
+ */
 
 public class GeoLocator {
 
@@ -131,6 +135,12 @@ public class GeoLocator {
         Geocoder geocoder;
         List<Address> addresses;
         geocoder = new Geocoder(context, Locale.getDefault());
+
+        //check for 0.0
+        double limit = 0.000001;
+        if (getLattitude()<=limit || getLongitude()<limit){
+            return;
+        }
 
         try {
             addresses = geocoder.getFromLocation(lattitude, longitude, 1);

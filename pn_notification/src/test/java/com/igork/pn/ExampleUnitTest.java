@@ -1,4 +1,4 @@
-package com.location.aravind.getlocation;
+package com.igork.pn;
 
 import org.junit.Test;
 

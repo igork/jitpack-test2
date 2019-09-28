@@ -1,4 +1,4 @@
-package com.location.aravind.getlocation;
+package com.igork.pn;
 
 public class TestLib {
     public static String test(String str){
