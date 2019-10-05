@@ -154,6 +154,8 @@ public class PNSubscribeCallback extends SubscribeCallback {
     }
 
     public void getMessage(JsonObject o){
+
+        showToast(o);
     }
 
     private JsonObject parseMessage(PNMessageResult message){
@@ -206,7 +208,7 @@ public class PNSubscribeCallback extends SubscribeCallback {
             Toast.makeText(context,msg.toString(),Toast.LENGTH_LONG).show();
         }
     }
-
+*/
     public void showToast(final JsonElement msg){
         if (context!=null) {
 
@@ -228,7 +230,7 @@ public class PNSubscribeCallback extends SubscribeCallback {
 
         }
     }
-
+/*
     public void showToast2(final JsonElement msg){
         if (context!=null) {
 

@@ -19,6 +19,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class PNController {
 
@@ -52,28 +53,52 @@ public class PNController {
     }
 
     private boolean parseSettings(String settings){
-        JsonElement element = new JsonPrimitive(settings);
-        JsonObject result = element.getAsJsonObject();
+        if (settings!=null) {
 
-        element = result.get("subscribeKey");
-        subscribeKey = element.getAsString();
+            try {
+                JSONObject jsonObject = new JSONObject(settings);
+                subscribeKey = jsonObject.getString("subscribeKey");
+                publishKey = jsonObject.getString("publishKey");
 
-        element = result.get("publishKey");
-        publishKey = element.getAsString();
+                channelName = jsonObject.getString("channelName");
+                setChannelName(channelName);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
 
-        element = result.get("channedlName");
-        channelName = element.getAsString();
-
-        if( subscribeKey!=null && publishKey!=null){
-            return true;
-        } else {
-            return false;
         }
+        return false;
+        /*
+        if (settings!=null) {
+            JsonElement element = new JsonPrimitive(settings);
+            JsonObject result = element.getAsJsonObject();
 
+            element = result.get("subscribeKey");
+            String subscribeKey1 = element.getAsString();
+
+            element = result.get("publishKey");
+            String publishKey1 = element.getAsString();
+
+            element = result.get("channedlName");
+            String channelName1 = element.getAsString();
+
+            if (subscribeKey1 != null && publishKey1 != null) {
+
+                subscribeKey = subscribeKey1;
+                publishKey = publishKey1;
+                setChannelName(channelName1);
+                return true;
+            }
+        }
+        return false;
+        */
     }
 
     public void setChannelName(String channelName){
-        this.channelName = channelName;
+        if (channelName!=null) {
+            this.channelName = channelName;
+        }
     }
 
     public String getChannedName(){
@@ -81,8 +106,10 @@ public class PNController {
     }
 
     public void setCredetials(String publishKey,String subscribeKey){
-        this.publishKey = publishKey;
-        this.subscribeKey = subscribeKey;
+        if (publishKey!=null)
+            this.publishKey = publishKey;
+        if (subscribeKey!=null)
+            this.subscribeKey = subscribeKey;
         initPN();
     }
 
@@ -142,6 +169,33 @@ public class PNController {
 
     }
 
+    public List<String> getSubscribedChannels() {
+        return pubnub.getSubscribedChannels();
+    }
+
+    public void subscribe(String channel){
+
+        if (channel==null){
+            return;
+        }
+
+        List<String> list = pubnub.getSubscribedChannels();
+        if (!list.contains(channel)) {
+            list.add(channel);
+        }
+        try {
+
+            pubnub.addListener(new PNSubscribeCallback(channel, activity));
+
+            pubnub.subscribe()
+                    .channels(list)//Arrays.asList(channel))
+                    .execute();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
     static int num =0;
 
     public void test(){
@@ -161,6 +215,10 @@ public class PNController {
                 });
 
     }
+
+    /*
+    max message size 32K
+     */
 
     public void publish(JSONObject data){
         pubnub.publish()

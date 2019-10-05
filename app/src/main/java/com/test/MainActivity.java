@@ -11,6 +11,8 @@ import com.igork.pn.TestLib;
 
 import com.igork.pn.PNController;
 
+import org.json.JSONObject;
+
 public class MainActivity extends AppCompatActivity {
 
     TextView tvValue;
@@ -46,6 +48,12 @@ public class MainActivity extends AppCompatActivity {
                 String test2 = "test2";
                 try {
                     pnc = new PNController(activity);
+
+                    pnc.subscribe();
+
+                    JSONObject obj = new JSONObject("{a:bb}");
+                    pnc.publish(obj);
+
                     test2 = pnc.toString();
                 } catch (Exception e){
                     e.printStackTrace();
