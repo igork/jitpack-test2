@@ -2,7 +2,6 @@ package com.igork.pn;
 
 import android.app.Activity;
 import android.content.Context;
-import android.view.View;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -23,7 +22,7 @@ import java.util.Date;
 
 public class PNController {
 
-    PubNub pubnub;
+    static PubNub pubnub;
 
     String channelName; // = "demo_tutorial";
     String subscribeKey;
@@ -36,23 +35,23 @@ public class PNController {
 
         this.activity = activity;
         this.context = activity.getApplicationContext();
-        init();
+
+        String settings = getDefaultSettings();
+        if (parseSettings(settings)) {
+            initPN();
+        }
 
     }
 
 
-    private void init(){
-        //init
+    private void initPN(){
         PNConfiguration pnConfiguration = new PNConfiguration();
-        pnConfiguration.setSubscribeKey("sub-c-93dfd156-c05e-11e9-be0f-1ea63a606bf6");
-        pnConfiguration.setPublishKey("pub-c-3557824b-f648-404b-a331-b150b7d80c3a");
-
+        pnConfiguration.setSubscribeKey(subscribeKey);
+        pnConfiguration.setPublishKey(publishKey);
         pubnub = new PubNub(pnConfiguration);
     }
 
-    private void getSettings(){
-        String settings = getJsonFile(context);
-
+    private boolean parseSettings(String settings){
         JsonElement element = new JsonPrimitive(settings);
         JsonObject result = element.getAsJsonObject();
 
@@ -65,18 +64,48 @@ public class PNController {
         element = result.get("channedlName");
         channelName = element.getAsString();
 
+        if( subscribeKey!=null && publishKey!=null){
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
     public void setChannelName(String channelName){
         this.channelName = channelName;
     }
 
-    private static String getJsonFile(Context context){
+    public String getChannedName(){
+        return this.channelName;
+    }
+
+    public void setCredetials(String publishKey,String subscribeKey){
+        this.publishKey = publishKey;
+        this.subscribeKey = subscribeKey;
+        initPN();
+    }
+
+    private String getDefaultSettings(){
+
+        return getSettingsFromFile("pn_services.json");
+
+    }
+
+    public String getSettingsFromFile(String fileName){
+
+        try {
+            return getSettingsFromFile(context.getAssets().open(fileName));
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+    public String getSettingsFromFile(InputStream is){
 
         String json;
 
         try {
-            InputStream is = context.getAssets().open("pn_services.json");
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);
@@ -89,7 +118,6 @@ public class PNController {
 
         //Log.e("data", json);
         return json;
-
     }
 
     private static String getDate(){

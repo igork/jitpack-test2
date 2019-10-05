@@ -5,7 +5,9 @@ import android.content.Context;
 import android.os.Handler;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.pubnub.api.PubNub;
 import com.pubnub.api.callbacks.SubscribeCallback;
 import com.pubnub.api.enums.PNStatusCategory;
@@ -16,6 +18,9 @@ import com.pubnub.api.models.consumer.pubsub.PNSignalResult;
 import com.pubnub.api.models.consumer.pubsub.objects.PNMembershipResult;
 import com.pubnub.api.models.consumer.pubsub.objects.PNSpaceResult;
 import com.pubnub.api.models.consumer.pubsub.objects.PNUserResult;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class PNSubscribeCallback extends SubscribeCallback {
 
@@ -101,6 +106,7 @@ public class PNSubscribeCallback extends SubscribeCallback {
     @Override
     public void message(PubNub pubnub, PNMessageResult message) {
 
+        /*
         JsonElement msg = message.getMessage();
         System.out.println("MESSAGE: " + msg);
 
@@ -115,9 +121,9 @@ public class PNSubscribeCallback extends SubscribeCallback {
             System.out.println("Message metadata: " + message.getUserMetadata().getAsString());
         }
 
-        //Toast..makeText(this, "Refresh", Toast.LENGTH_LONG).show();
-
         showToast(msg);
+        */
+        getMessage(parseMessage(message));
         /*
 
         // Handle new message stored in message.message
@@ -147,6 +153,54 @@ public class PNSubscribeCallback extends SubscribeCallback {
 
     }
 
+    public void getMessage(JsonObject o){
+    }
+
+    private JsonObject parseMessage(PNMessageResult message){
+
+        JsonObject innerObject = null;
+
+        if (message!=null){
+            innerObject = new JsonObject();
+            innerObject.add("message", message.getMessage());
+
+            //JsonObject jsonObject = new JsonObject();
+            //jsonObject.add("publisher", innerObject);
+
+            innerObject.addProperty("publisher",message.getPublisher());
+            innerObject.addProperty("subscription",message.getSubscription());
+            innerObject.addProperty("channel",message.getChannel());
+            innerObject.addProperty("timetoken",message.getTimetoken());
+
+            if (message.getUserMetadata()!=null) {
+                innerObject.add("metadata",message.getUserMetadata());
+            }
+        }
+        return innerObject;
+    }
+
+    /*
+    {"publisher":{"name":"john"}}
+    */
+    /*
+    public class Creator {
+        protected Map<String, String> publisher = new HashMap<String, String>();
+        public Creator(String name){
+            publisher.put("name", name);
+        }
+    }
+    public String getMessage2(PNMessageResult message){
+        String innerObject = null;
+
+        if (message!=null){
+            Creator creator = new Creator("John");
+            innerObject = (new Gson().toJson(creator));
+        }
+        return innerObject;
+    }
+    */
+
+    /*
     public void wrong(JsonElement msg){
         if (context!=null) {
             Toast.makeText(context,msg.toString(),Toast.LENGTH_LONG).show();
@@ -187,6 +241,7 @@ public class PNSubscribeCallback extends SubscribeCallback {
             Toast.makeText(context,msg.toString(),Toast.LENGTH_LONG).show();
         }
     }
+    */
 
     @Override
     public void presence(PubNub pubnub, PNPresenceEventResult presence) {
@@ -200,7 +255,7 @@ public class PNSubscribeCallback extends SubscribeCallback {
 
     @Override
     public void space(PubNub pubnub, PNSpaceResult pnSpaceResult) {
-        System.out.println("SPACE: ");
+        System.out.println("SPACE: " );
     }
 
     @Override
